@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Serenity AI Counselor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Serenity AI Counselor 🤖💬</h1>
+        <div class="chat-container" id="chatBox"></div>
+        
+        <form id="chatForm" onsubmit="return sendMessage()">
+            <input type="text" id="userInput" placeholder="How are you feeling today?" required>
+            <button type="submit">Send</button>
+        </form>
+
+        <div class="self-help">
+            <h3>Quick Self-Help Tools:</h3>
+            <button onclick="suggestExercise('breathing')">Breathing Exercise</button>
+            <button onclick="suggestExercise('gratitude')">Gratitude Journal</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chatBox = document.getElementById('chatBox');
+            
+            chatBox.innerHTML += `<div class="user-message">${input.value}</div>`;
+            const response = await fetch('/chat', {
+                method: 'POST',
+                body: new URLSearchParams({message: input.value})
+            });
+            
+            const data = await response.json();
+            chatBox.innerHTML += `<div class="ai-message">${data.response}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return false;
+        }
+
+        function suggestExercise(type) {
+            const exercises = {
+                breathing: "Let's do a 4-7-8 breathing exercise: Inhale for 4 seconds, hold for 7, exhale for 8. Repeat 4 times.",
+                gratitude: "Let's list three things you're grateful for today. They can be simple things like a good cup of coffee."
+            };
+            document.getElementById('userInput').value = `Suggest ${type} exercise`;
+            sendMessage();
+        }
+    </script>
+</body>
+</html>
